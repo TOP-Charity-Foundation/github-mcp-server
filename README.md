@@ -1138,7 +1138,8 @@ The following sets of tools are available:
   - `title`: The project title. Required for 'create_project' method. (string, optional)
   - `updated_field`: Object describing the field to update and its new value. Required for 'update_project_item'. Two shapes are accepted: (1) by ID — {"id": 123456, "value": "..."}; (2) by name — {"name": "Status", "value": "In Progress"}. For single-select fields, option-name resolution requires the by-name shape; on the by-ID shape, pass the option ID. Set value to null to clear the field. (object, optional)
   - `view_id`: Project view node ID for update or delete; must belong to owner/project_number. (string, optional)
-  - `visible_fields`: Field database IDs for table or board creation; unsupported for roadmap. (string[], optional)
+  - `visible_field_names`: Field names for table or board creation; mutually exclusive with visible_fields. (string[], optional)
+  - `visible_fields`: Field database IDs for table or board creation; mutually exclusive with visible_field_names. (string[], optional)
 
 </details>
 
