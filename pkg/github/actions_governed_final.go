@@ -33,7 +33,7 @@ func GovernedReviewPendingDeployments(t translations.TranslationHelperFunc) inve
 				Type:        "array",
 				Description: "One or more exact pending deployment environment IDs",
 				Items:       &jsonschema.Schema{Type: "number", Minimum: jsonschema.Ptr(1.0)},
-				MinItems:    jsonschema.Ptr(uint64(1)),
+				MinItems:    jsonschema.Ptr(1),
 			},
 			"state": {
 				Type:        "string",
@@ -100,7 +100,7 @@ func GovernedReviewPendingDeployments(t translations.TranslationHelperFunc) inve
 				return ghErrors.NewGitHubAPIErrorResponse(ctx, "failed to review pending deployments", resp, err), nil, nil
 			}
 			if resp != nil && resp.Body != nil {
-				defer resp.Body.Close()
+				defer func() { _ = resp.Body.Close() }()
 			}
 			encoded, err := json.Marshal(deployments)
 			if err != nil {
@@ -180,7 +180,7 @@ func GovernedResolveDispatchedWorkflowRun(t translations.TranslationHelperFunc) 
 				return ghErrors.NewGitHubAPIErrorResponse(ctx, "failed to resolve dispatched workflow run", resp, err), nil, nil
 			}
 			if resp != nil && resp.Body != nil {
-				defer resp.Body.Close()
+				defer func() { _ = resp.Body.Close() }()
 			}
 
 			matches := make([]*gh.WorkflowRun, 0, 1)
