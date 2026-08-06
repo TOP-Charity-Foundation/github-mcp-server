@@ -11,8 +11,9 @@ import (
 // Handlers are generated on-demand during registration via RegisterAll(ctx, server, deps).
 // The "default" keyword in WithToolsets will expand to toolsets marked with Default: true.
 func NewInventory(t translations.TranslationHelperFunc) *inventory.Builder {
+	tools := append(AllTools(t), GovernedActionsTools(t)...)
 	return inventory.NewBuilder().
-		SetTools(AllTools(t)).
+		SetTools(tools).
 		SetResources(AllResources(t)).
 		SetPrompts(AllPrompts(t))
 }
