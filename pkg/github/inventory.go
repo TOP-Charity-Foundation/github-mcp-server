@@ -12,6 +12,7 @@ import (
 // The "default" keyword in WithToolsets will expand to toolsets marked with Default: true.
 func NewInventory(t translations.TranslationHelperFunc) *inventory.Builder {
 	tools := append(AllTools(t), GovernedActionsTools(t)...)
+	tools = append(tools, GovernedActionsExtendedTools(t)...)
 	return inventory.NewBuilder().
 		SetTools(tools).
 		SetResources(AllResources(t)).
