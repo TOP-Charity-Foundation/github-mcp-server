@@ -14,6 +14,7 @@ func NewInventory(t translations.TranslationHelperFunc) *inventory.Builder {
 	tools := append(AllTools(t), GovernedActionsTools(t)...)
 	tools = append(tools, GovernedActionsExtendedTools(t)...)
 	tools = append(tools, GovernedActionsLogsDeploymentTools(t)...)
+	tools = append(tools, GovernedActionsFinalTools(t)...)
 	return inventory.NewBuilder().
 		SetTools(tools).
 		SetResources(AllResources(t)).
