@@ -129,6 +129,10 @@ func (st *ServerTool) RegisterFunc(s *mcp.Server, deps any, middleware ...ToolHa
 	// so a remote proxy can read owner/repo from headers instead of re-parsing the
 	// JSON-RPC body. No-op for tools without these params.
 	AnnotateHeaderParams(&toolCopy)
+	// Remove legacy/model-supplied approval-envelope schema fields before tool
+	// registration. ChatGPT approval and confirmation state is owned by the host,
+	// not by tool input JSON, so these fields must not appear in MCP input schemas.
+	SanitizeApprovalEnvelopeParams(&toolCopy)
 	s.AddTool(&toolCopy, handler)
 }
 
@@ -181,6 +185,75 @@ func AnnotateHeaderParams(tool *mcp.Tool) {
 		schemaCopy.Properties[prop] = &propCopy
 	}
 	tool.InputSchema = &schemaCopy
+}
+
+var approvalEnvelopeParams = map[string]struct{}{
+	"authority":            {},
+	"authorityMode":        {},
+	"authority_mode":       {},
+	"confirmation":         {},
+	"fullAuthority":        {},
+	"fullAuthorityRelease": {},
+	"full_authority":       {},
+	"full_authority_release": {},
+}
+
+// SanitizeApprovalEnvelopeParams removes legacy/model-supplied approval fields
+// from a tool input schema before registration. It clones the schema value and
+// top-level Properties map before mutating so static tool definitions remain
+// immutable and safe to reuse across registrations.
+func SanitizeApprovalEnvelopeParams(tool *mcp.Tool) {
+	schema, ok := tool.InputSchema.(*jsonschema.Schema)
+	if !ok || schema == nil {
+		return
+	}
+
+	needsClone := false
+	for prop := range approvalEnvelopeParams {
+		if _, exists := schema.Properties[prop]; exists {
+			needsClone = true
+			break
+		}
+	}
+	if !needsClone && !requiredContainsApprovalEnvelopeParam(schema.Required) {
+		return
+	}
+
+	schemaCopy := *schema
+	schemaCopy.Properties = maps.Clone(schema.Properties)
+	for prop := range approvalEnvelopeParams {
+		delete(schemaCopy.Properties, prop)
+	}
+	schemaCopy.Required = filterApprovalEnvelopeRequired(schema.Required)
+	tool.InputSchema = &schemaCopy
+}
+
+func requiredContainsApprovalEnvelopeParam(required []string) bool {
+	for _, name := range required {
+		if _, blocked := approvalEnvelopeParams[name]; blocked {
+			return true
+		}
+	}
+	return false
+}
+
+func filterApprovalEnvelopeRequired(required []string) []string {
+	if len(required) == 0 {
+		return required
+	}
+	filtered := make([]string, 0, len(required))
+	changed := false
+	for _, name := range required {
+		if _, blocked := approvalEnvelopeParams[name]; blocked {
+			changed = true
+			continue
+		}
+		filtered = append(filtered, name)
+	}
+	if !changed {
+		return required
+	}
+	return filtered
 }
 
 // NewServerToolWithContextHandler creates a ServerTool with a handler that receives deps via context.
