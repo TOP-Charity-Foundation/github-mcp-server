@@ -24,6 +24,7 @@ func GovernedActionsTools(t translations.TranslationHelperFunc) []inventory.Serv
 		GovernedListWorkflowRuns(t),
 		GovernedGetWorkflowRun(t),
 		GovernedCancelWorkflowRun(t),
+		GovernedForceCancelWorkflowRun(t),
 		GovernedRerunWorkflowRun(t),
 	}
 }

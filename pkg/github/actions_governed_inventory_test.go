@@ -19,7 +19,7 @@ func governedActionsInventoryForTest() []inventory.ServerTool {
 func TestGovernedActionsInventoryIsAdditiveAndUnique(t *testing.T) {
 	baseTools := AllTools(stubTranslator)
 	allTools := governedActionsInventoryForTest()
-	require.Len(t, allTools, len(baseTools)+17, "governed Actions surface must add exactly 17 top-level tools")
+	require.Len(t, allTools, len(baseTools)+18, "governed Actions surface must add exactly 18 top-level tools")
 
 	counts := make(map[string]int, len(allTools))
 	for _, tool := range allTools {
@@ -35,6 +35,7 @@ func TestGovernedActionsInventoryIsAdditiveAndUnique(t *testing.T) {
 		"get_workflow_run",
 		"get_workflow_run_attempt",
 		"cancel_workflow_run",
+		"force_cancel_workflow_run",
 		"rerun_workflow_run",
 		"download_workflow_run_logs",
 		"download_workflow_run_attempt_logs",

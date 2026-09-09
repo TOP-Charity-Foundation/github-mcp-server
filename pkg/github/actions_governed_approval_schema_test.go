@@ -17,6 +17,7 @@ var governedActionsReadOnlyExpectations = map[string]bool{
 	"get_workflow_run":                   true,
 	"get_workflow_run_attempt":           true,
 	"cancel_workflow_run":                false,
+	"force_cancel_workflow_run":          false,
 	"rerun_workflow_run":                 false,
 	"download_workflow_run_logs":         true,
 	"download_workflow_run_attempt_logs": true,
@@ -29,12 +30,13 @@ var governedActionsReadOnlyExpectations = map[string]bool{
 }
 
 var governedActionsDestructiveExpectations = map[string]bool{
-	"dispatch_workflow":           false,
-	"cancel_workflow_run":         true,
-	"rerun_workflow_run":          false,
-	"review_pending_deployments":  true,
-	"enable_workflow":             true,
-	"disable_workflow":            true,
+	"dispatch_workflow":          false,
+	"cancel_workflow_run":        true,
+	"force_cancel_workflow_run":  true,
+	"rerun_workflow_run":         false,
+	"review_pending_deployments": true,
+	"enable_workflow":            true,
+	"disable_workflow":           true,
 }
 
 var forbiddenApprovalSchemaProperties = map[string]struct{}{
